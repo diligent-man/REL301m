@@ -14,6 +14,9 @@ from .environment import (
 from .RLGlue import RLGlue
 
 from .utils import (
+    ParkingWorld,
+    Transitions,
+    visualize_value_fn,
     visualize_training_result,
     visualize_best_action_chosen,
     visualize_step_size_effect_to_q_value,
@@ -32,6 +35,7 @@ __all__ = [
 
     "RLGlue",
 
+    "visualize_value_fn",
     "visualize_training_result",
     "visualize_best_action_chosen",
     "visualize_step_size_effect_to_q_value",

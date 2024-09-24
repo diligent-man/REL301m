@@ -1,8 +1,12 @@
 import numpy as np
 
 from tqdm import tqdm
-from matplotlib import pyplot as plt
 from typing import Dict, Tuple, List, Union
+
+from matplotlib import pyplot as plt
+from matplotlib.ticker import MaxNLocator
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 from semester_8.REL301m.Fundamentals_of_RL.REL_lib import (
     AGENT_CLASS, ENV_CLASS,
     RLGlue
@@ -10,7 +14,13 @@ from semester_8.REL301m.Fundamentals_of_RL.REL_lib import (
 
 plt.switch_backend("tkagg")
 
-__all__ = ["visualize_training_result", "visualize_best_action_chosen", "visualize_step_size_effect_to_q_value", "train"]
+__all__ = [
+    "visualize_training_result",
+    "visualize_best_action_chosen",
+    "visualize_step_size_effect_to_q_value",
+    "visualize_value_fn",
+    "train"
+]
 
 
 def visualize_training_result(num_runs: int, num_steps: int,
@@ -170,3 +180,51 @@ def train(num_actions: int, num_runs: int, num_steps: int,
     if return_mean_reward:
         rewards = np.mean(rewards, axis=0)
     return rewards, average_best, best_action_chosen, expected_value, estimated_value
+
+
+def visualize_value_fn(V: np.ndarray, pi: np.ndarray) -> None:
+    """
+    :param V: value fn, shape (states)
+    :param pi: policy fn, shape (states, actions)
+    :return: None
+
+    """
+    plt.rc('font', size=15)  # controls default text sizes
+
+    # plot value
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12.5, 5))
+    ax1.axis('on')
+    ax1.cla()
+    states = np.arange(V.shape[0])
+    ax1.bar(states, V, edgecolor='none')
+    ax1.set_xlabel('State')
+    ax1.set_ylabel('Value', rotation='horizontal', ha='right')
+    ax1.set_title('Value Function')
+    ax1.xaxis.set_major_locator(MaxNLocator(integer=True, nbins=6))
+    ax1.yaxis.grid()
+    ax1.set_ylim(bottom=V.min())
+
+    # plot policy
+    ax2.axis('on')
+    ax2.cla()
+    im = ax2.imshow(pi.T, cmap='Greys', vmin=0, vmax=1, aspect='auto')
+    ax2.invert_yaxis()
+    ax2.set_xlabel('State')
+    ax2.set_ylabel('Action', rotation='horizontal', ha='right')
+    ax2.set_title('Policy')
+    start, end = ax2.get_xlim()
+    ax2.xaxis.set_ticks(np.arange(start, end), minor=True)
+    ax2.xaxis.set_major_locator(MaxNLocator(integer=True, nbins=6))
+    ax2.yaxis.set_major_locator(MaxNLocator(integer=True, nbins=6))
+    start, end = ax2.get_ylim()
+    ax2.yaxis.set_ticks(np.arange(start, end), minor=True)
+    ax2.grid(which='minor')
+
+    divider = make_axes_locatable(ax2)
+    cax = divider.append_axes('right', size='5%', pad=0.20)
+    cbar = fig.colorbar(im, cax=cax, orientation='vertical')
+    cbar.set_label('Prob', rotation=0, ha='left')
+    fig.subplots_adjust(wspace=0.5)
+
+    # plt.savefig("demo.png")
+    plt.show()
