@@ -2,7 +2,7 @@ import copy
 import numpy as np
 from typing import Tuple, Union
 
-from semester_8.REL301m.Fundamentals_of_RL.REL_lib import (
+from semester_8.REL301m.REL_lib import (
     ParkingWorld,
     visualize_value_fn
 )
@@ -46,11 +46,11 @@ def inspect_transition_prob() -> None:
 
 
 def bellman_update_v1(current_state: int,
-                     env: ParkingWorld,
-                     V: np.ndarray,
-                     pi: np.ndarray,
-                     gamma: float,
-                     weighting: bool = True
+                      env: ParkingWorld,
+                      V: np.ndarray,
+                      gamma: float,
+                      pi: np.ndarray = None,
+                      weighting: bool = True
                      ) -> float:
     """
     :param current_state
@@ -79,8 +79,10 @@ def bellman_update_v1(current_state: int,
             reward, transition_prob = transition[t]
             new_v += pi[s, a] * transition_prob * [reward + gamma * V[t]]
     """
-    new_v = 0.
+    if weighting:
+        assert pi is not None, "Need providing prob of action for weighting state transition prob"
 
+    new_v = 0.
     for a in env.A:  # for all actions
         action_prob = pi[current_state, a] if weighting else 1
 
@@ -96,6 +98,7 @@ def bellman_update_v2(current_state: int,
                       pi: np.ndarray = None,
                       weighting: bool = True
                       ) -> Union[float, np.ndarray]:
+
     """
     :param current_state
     :param env: ParkingWorld nxn grid env
@@ -156,8 +159,8 @@ def bellman_update_v2(current_state: int,
     """
     # (num_actions, num_states, 2)
     transitions_mat = np.array([env.transitions(current_state, action) for action in env.A])
-    prob = transitions_mat[..., 1]  # (num_actions, num_states)
-    reward = transitions_mat[..., 0].T  # (num_states, num_actions)
+    prob = transitions_mat[..., 1]
+    reward = transitions_mat[..., 0]
 
     # (num_states, num_actions)
     s_prime: np.ndarray = (np.arange(len(env.S), dtype=np.int32)).reshape(-1, 1)
@@ -167,13 +170,13 @@ def bellman_update_v2(current_state: int,
     # (1, num_actions)
     if weighting:
         # Updated value V(s) = Pi(a|s) * p(s', r|s, a) * (r(s, a, s') + gamma * V(s'))
+        assert pi is not None, "Need providing prob of action for weighting state transition prob"
         action_probs = pi[current_state, :]
         action_probs = action_probs.reshape((1, -1))
-        updated_val: np.ndarray = action_probs @ prob @ (reward + gamma * s_prime)
-
+        updated_val: np.ndarray = action_probs @ prob @ (reward.T + gamma * s_prime)
     else:
         # Updated value pi(s) = p(s', r|s, a) * (r(s, a, s') + gamma * V(s'))
-        updated_val = prob @ (reward + gamma * s_prime)
+        updated_val = prob @ (reward.T + gamma * s_prime)
     return updated_val[:, 0].squeeze()
 ########################################################################################################################
 
@@ -182,7 +185,8 @@ def evaluate_policy(env: ParkingWorld,
                     V: np.ndarray,
                     pi: np.ndarray,
                     gamma: float,
-                    theta: float
+                    theta: float,
+                    v1: bool = False
                     ) -> np.ndarray:
     """
     :param env: nxm grid
@@ -191,6 +195,7 @@ def evaluate_policy(env: ParkingWorld,
     :param s: current state
     :param gamma: discount factor
     :param theta: threshold for stop estimating
+    :param v1: update with bellman v1 or not
     :return: updated V
     """
     """
@@ -209,7 +214,7 @@ def evaluate_policy(env: ParkingWorld,
 
         for s in env.S:
             current_v, new_v = V[s], 0.
-            V[s] = bellman_update_v2(s, env, V, gamma, pi)
+            V[s] = bellman_update_v1(s, env, V, gamma, pi) if v1 else bellman_update_v2(s, env, V, gamma, pi)
             delta = np.max((delta, np.abs(current_v - V[s])))  # Thresholding
     return V
 
@@ -217,13 +222,15 @@ def evaluate_policy(env: ParkingWorld,
 def improve_policy(env: ParkingWorld,
                    V: np.ndarray,
                    pi: np.ndarray,
-                   gamma: float
+                   gamma: float,
+                   v1: bool = False
                    ) -> Tuple[np.ndarray, bool]:
     policy_stable = True
 
     for s in env.S:
         current_action = pi[s, :].copy()
-        new_best_action = np.argmax(bellman_update_v2(s, env, V, gamma, weighting=False))
+        new_best_action = bellman_update_v1(s, env, V, gamma, weighting=False) if v1 else bellman_update_v2(s, env, V, gamma, weighting=False)
+        new_best_action = np.argmax(new_best_action)
 
         pi[s, :] = 0
         pi[s, new_best_action] = 1
@@ -234,14 +241,17 @@ def improve_policy(env: ParkingWorld,
     return pi, policy_stable
 
 
-def policy_iteration(env: ParkingWorld, gamma: float, theta: float) -> Tuple[np.ndarray, np.ndarray]:
-    V = np.zeros(len(env.S))
-    pi = np.ones((len(env.S), len(env.A))) / len(env.A)  # uniform dist
+def policy_iteration(env: ParkingWorld,
+                     V: np.ndarray,
+                     pi: np.ndarray,
+                     gamma: float, theta: float,
+                     v1: bool = False
+                     ) -> Tuple[np.ndarray, np.ndarray]:
     policy_stable = False
 
     while not policy_stable:
-        V = evaluate_policy(env, V, pi, gamma, theta)
-        pi, policy_stable = improve_policy(env, V, pi, gamma)
+        V = evaluate_policy(env, V, pi, gamma, theta, v1)
+        pi, policy_stable = improve_policy(env, V, pi, gamma, v1)
     return V, pi
 ########################################################################################################################
 
@@ -287,11 +297,15 @@ def value_iteration_v2(env: ParkingWorld, gamma: float, theta: float) -> Tuple[n
 
 
 def main() -> None:
-    inspect_visualize_value_fn()
-    inspect_transition_prob()
+    # inspect_visualize_value_fn()
+    # inspect_transition_prob()
 
-    V, pi = policy_iteration(Global.env, Global.gamma, Global.theta)
-    visualize_value_fn(V, pi)
+    V1, pi1 = policy_iteration(Global.env, Global.V.copy(), Global.pi.copy(), Global.gamma, Global.theta, v1=False)
+    V2, pi2 = policy_iteration(Global.env, Global.V.copy(), Global.pi.copy(), Global.gamma, Global.theta, v1=False)
+    visualize_value_fn(V1, pi1)
+    visualize_value_fn(V2, pi2)
+    print(np.array_equal(V1, V2))
+    print(np.array_equal(pi1, pi2))
 
     V, pi = value_iteration_v2(Global.env, Global.gamma, Global.theta)
     visualize_value_fn(V, pi)

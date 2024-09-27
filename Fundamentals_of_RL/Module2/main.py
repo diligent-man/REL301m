@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 from typing import List
-from semester_8.REL301m.Fundamentals_of_RL.REL_lib import (
+from semester_8.REL301m.REL_lib import (
     GreedyAgent,
     EpsilonGreedyAgent,
     EpsilonGreedyAgentConstantStepsize,

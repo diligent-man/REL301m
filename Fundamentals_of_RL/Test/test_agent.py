@@ -1,6 +1,6 @@
 import numpy as np
 
-from semester_8.REL301m.Fundamentals_of_RL.REL_lib.agent import (
+from semester_8.REL301m.REL_lib.agent import (
     GreedyAgent,
     EpsilonGreedyAgent,
     EpsilonGreedyAgentConstantStepsize
