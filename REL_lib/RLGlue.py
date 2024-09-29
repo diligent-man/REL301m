@@ -27,6 +27,8 @@ class RLGlue:
                  agent_class: AGENT_CLASS,
                  env_class: ENV_CLASS
                  ) -> None:
+        assert isinstance(agent_class, AGENT_CLASS), "Provided agent class is unavailable"
+        assert isinstance(env_class, ENV_CLASS), "Provided env class is unavailable"
         self.agent: AGENT_CLASS = agent_class
         self.environment: ENV_CLASS = env_class
 
@@ -43,11 +45,7 @@ class RLGlue:
         self.num_episodes = 0
 
     def rl_start(self) -> Tuple[int, int]:
-        """Starts RLGlue experiment
-
-        Returns:
-            tuple: (state, action)
-        """
+        """Starts RLGlue experiment"""
         last_state = self.environment.env_start()
         self.last_action = self.agent.agent_start(last_state)
 
@@ -63,6 +61,7 @@ class RLGlue:
         Returns:
             The action taken by the agent.
         """
+        print(observation)
         return self.agent.agent_start(observation)
 
     def rl_agent_step(self, reward, observation):
@@ -123,29 +122,26 @@ class RLGlue:
 
         return ro
 
-    def rl_step(self):
-        """Step taken by RLGlue, takes env step and either step or
-            end by agent.
-
-        Returns:
-            (float, state, action, Boolean): reward, last state observation,
-                last action, boolean indicating termination
+    def rl_step(self) -> Tuple:
         """
+        Step taken by RLGlue, takes env step and either step or end by agent.
 
+        :return reward_obs_act_term (float, state, action, Boolean)
+        """
         (reward, last_state, term) = self.environment.env_step(self.last_action)
-
+        print(reward, last_state, term, "reward")
         self.total_reward += reward
 
         if term:
             self.num_episodes += 1
             self.agent.agent_end(reward)
-            roat = (reward, last_state, None, term)
+            reward_obs_act_term = (reward, last_state, None, term)
         else:
             self.num_steps += 1
             self.last_action = self.agent.agent_step(reward, last_state)
-            roat = (reward, last_state, self.last_action, term)
-
-        return roat
+            reward_obs_act_term = (reward, last_state, self.last_action, term)
+            print(reward_obs_act_term)
+        return reward_obs_act_term
 
     def rl_cleanup(self):
         """Cleanup done at end of experiment."""
@@ -177,7 +173,7 @@ class RLGlue:
         """
         return self.environment.env_message(message)
 
-    def rl_episode(self, max_steps_this_episode):
+    def rl_episode(self, max_steps_this_episode: int) -> bool:
         """Runs an RLGlue episode
 
         Args:
@@ -187,14 +183,12 @@ class RLGlue:
             Boolean: if the episode should terminate
         """
         is_terminal = False
+        _ = self.rl_start()
 
-        self.rl_start()
-
-        while (not is_terminal) and ((max_steps_this_episode == 0) or
-                                     (self.num_steps < max_steps_this_episode)):
+        while (not is_terminal) and \
+              ((max_steps_this_episode == 0) or (self.num_steps < max_steps_this_episode)):
             rl_step_result = self.rl_step()
             is_terminal = rl_step_result[3]
-
         return is_terminal
 
     def rl_return(self):

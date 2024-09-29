@@ -4,7 +4,8 @@ from .utils import (
     visualize_training_result,
     visualize_best_action_chosen,
     visualize_step_size_effect_to_q_value,
-    train
+    k_armed_bandit_train,
+    evaluate_policy_with_TD
 )
 
 __all__ = [
@@ -14,5 +15,6 @@ __all__ = [
     "visualize_training_result",
     "visualize_best_action_chosen",
     "visualize_step_size_effect_to_q_value",
-    "train"
+    "k_armed_bandit_train",
+    "evaluate_policy_with_TD"
 ]

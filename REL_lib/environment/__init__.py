@@ -1,6 +1,11 @@
-from .TenArmEnv import TenArmEnv
+from .BaseEnv import _reward, _obs, _term
+from .kArmEnv import TenArmEnv
 from .ParkingWorld import ParkingWorld
+from .CliffWalkEnv import CliffWalkEnv
 
-ENV_CLASS = TenArmEnv | ParkingWorld
+ENV_CLASS = TenArmEnv | ParkingWorld | CliffWalkEnv
 
-__all__ = ["TenArmEnv", "ParkingWorld", "ENV_CLASS"]
+__all__ = [
+    "_reward", "_obs", "_term",
+    "TenArmEnv", "ParkingWorld", "CliffWalkEnv", "ENV_CLASS"
+]

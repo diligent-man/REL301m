@@ -1,66 +1,52 @@
+from types import UnionType
+from typing import Tuple, Dict
 from abc import ABCMeta, abstractmethod
 
-__all__ = ["BaseEnvironment"]
+__all__ = ["BaseEnvironment", "_reward", "_obs", "_term"]
+
+import numpy as np
+
+_reward =  int | float | None
+_obs = int | Tuple | np.ndarray | None
+_term = bool | None
 
 
 class BaseEnvironment(metaclass=ABCMeta):
-    """Implements the environment for an RLGlue environment
+    _reward_obs_term: Tuple[_reward, _obs, _term]
 
-    Note:
-        env_init,
-        env_start,
-        env_step,
-        env_cleanup, and env_message are required methods.
-    """
-
-    def __init__(self,
-                 reward=None,
-                 observation=None,
-                 termination=None
-                 ) -> None:
-        self.reward_obs_term = (reward, observation, termination)
+    def __init__(self) -> None:
+        self._reward_obs_term = (None, None, None)
 
     @abstractmethod
-    def env_init(self, env_info):
-        """Setup for the environment called when the experiment first starts.
-
-        Note:
-            Initialize a tuple with the reward, first state observation, boolean
-            indicating if it's terminal.
+    def env_init(self, env_info: Dict):
         """
+        Setup for the environment called when the experiment first starts.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def env_start(self):
-        """The first method called when the experiment starts, called before the
-        agent starts.
-
-        Returns:
-            The first state observation from the environment.
         """
+        The first method called when the experiment starts, called before the
+        agent starts. Returns 1st state obs from env
+        """
+        raise NotImplementedError
 
     @abstractmethod
-    def env_step(self, action):
-        """A step taken by the environment.
-
-        Args:
-            action: The action taken by the agent
-
-        Returns:
-            (float, state, Boolean): a tuple of the reward, state observation,
-                and boolean indicating if it's terminal.
+    def env_step(self, action: int):
         """
+        A step taken by the environment. Returns reward_obs_term tuple
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def env_cleanup(self):
         """Cleanup done after the environment ends"""
+        raise NotImplementedError
 
     @abstractmethod
-    def env_message(self, message):
-        """A message asking the environment for information
-
-        Args:
-            message: the message passed to the environment
-
-        Returns:
-            the response (or answer) to the message
+    def env_message(self, message: str):
         """
+        Query some info of env
+        """
+        raise NotImplementedError

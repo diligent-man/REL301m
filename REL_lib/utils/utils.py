@@ -7,9 +7,11 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+
+from ..RLGlue import RLGlue
 from ..agent import AGENT_CLASS
 from ..environment import ENV_CLASS
-from ..RLGlue import RLGlue
+from .GridWorldManager import GridWorldManager
 
 plt.switch_backend("tkagg")
 
@@ -18,7 +20,8 @@ __all__ = [
     "visualize_best_action_chosen",
     "visualize_step_size_effect_to_q_value",
     "visualize_value_fn",
-    "train"
+    "k_armed_bandit_train",
+    "evaluate_policy_with_TD"
 ]
 
 
@@ -110,7 +113,7 @@ def visualize_step_size_effect_to_q_value(max_expected_value: np.float64,
     return None
 
 
-def train(num_actions: int, num_runs: int, num_steps: int,
+def k_armed_bandit_train(num_actions: int, num_runs: int, num_steps: int,
           agent: AGENT_CLASS, env: ENV_CLASS,
           agent_info: Dict = None, env_info: Dict = None,
           return_mean_reward: bool = True,
@@ -167,8 +170,8 @@ def train(num_actions: int, num_runs: int, num_steps: int,
 
             # Just take 1st run for visualization reason
             if run == 0:
-                # estimated_value[rl_glue.agent.num_actions*i: rl_glue.agent.num_actions*(i+1)] = rl_glue.agent.q_values
-                estimated_value[:, i] = rl_glue.agent.q_values
+                # estimated_value[rl_glue.agent.num_actions*i: rl_glue.agent.num_actions*(i+1)] = rl_glue.agent.values
+                estimated_value[:, i] = rl_glue.agent.values
 
             # Resample reward from normal dist
             if (resample_reward_step is not None) and (i > 0) and (i % resample_reward_step == 0):
@@ -224,3 +227,33 @@ def visualize_value_fn(V: np.ndarray, pi: np.ndarray) -> None:
     cbar.set_label('Prob', rotation=0, ha='left')
     fig.subplots_adjust(wspace=0.5)
     plt.show()
+
+
+def evaluate_policy_with_TD(rl_glue: RLGlue,
+                            grid_world_manager: GridWorldManager,
+                            theta: float,
+                            plot_freq: int,
+                            num_episodes: int,
+                            save_path_root: str
+                   ) -> Tuple[np.ndarray, np.ndarray]:
+    delta = float("inf")
+    prev_v = rl_glue.agent.values
+
+    for episode in tqdm(range(1, num_episodes + 1)):
+        print("start new episode")
+        _ = rl_glue.rl_episode(0)  # no step limit
+
+        print()
+        print()
+        # current_v: np.ndarray = rl_glue.agent.agent_message("get_values")
+        # np.allclose(current_v, )
+        # delta = max(np.abs(values - theta), delta)
+        #
+        # if episode % plot_freq == 0:
+        #
+        #     grid_world_manager.plot_training_result(values, episode, save_path_root)
+
+    return (
+        rl_glue.agent.agent_message("get_values"),
+        rl_glue.agent.agent_message("get_policy")
+    )

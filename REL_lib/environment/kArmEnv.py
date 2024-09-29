@@ -23,11 +23,11 @@ class TenArmEnv(BaseEnvironment):
     seed: int = None
 
     def __init__(self,
-                 reward = None,
-                 observation = None,
-                 termination = None
+                 reward: int | float = None,
+                 obs: int | Tuple = None,
+                 term: bool = None
                  ) -> None:
-        super().__init__(reward, observation, termination)
+        super().__init__(reward, obs, term)
 
     def env_init(self, env_info=None) -> None:
         """Setup for the environment called when the experiment first starts.
@@ -43,7 +43,7 @@ class TenArmEnv(BaseEnvironment):
         np.random.seed(self.seed)
 
         self.arms: np.ndarray[np.float64] = np.random.randn(10)  # sampled from normal dist
-        self.reward_obs_term: Tuple = (0.0, 0, False)
+        self._reward_obs_term: Tuple = (0.0, 0, False)
 
     def env_start(self) -> int:
         """The first method called when the experiment starts, called before the
@@ -52,7 +52,7 @@ class TenArmEnv(BaseEnvironment):
         Returns:
             The first state observation from the environment.
         """
-        return self.reward_obs_term[1]
+        return self._reward_obs_term[1]
 
     def env_step(self, action: int) -> Tuple[float, int, bool]:
         """A step taken by the environment.
@@ -81,10 +81,10 @@ class TenArmEnv(BaseEnvironment):
         #         reward = 7
         noise = np.random.randn()
 
-        self.reward_obs_term = (self.arms[action] + noise,  # reward for current timestep
-                                self.reward_obs_term[1],  # current env state
+        self._reward_obs_term = (self.arms[action] + noise,  # reward for current timestep
+                                self._reward_obs_term[1],  # current env state
                                 False)
-        return self.reward_obs_term
+        return self._reward_obs_term
 
     def env_cleanup(self):
         """Cleanup done after the environment ends"""
@@ -100,13 +100,13 @@ class TenArmEnv(BaseEnvironment):
             string: the response (or answer) to the message
         """
         if message == "what is the current reward?":
-            return "{}".format(self.reward_obs_term[0])
+            return "{}".format(self._reward_obs_term[0])
 
         # else
         return "I don't know how to respond to your message"
 
     def __repr__(self) -> str:
-        return f"""Reward, obs, term: {self.reward_obs_term},
+        return f"""Reward, obs, term: {self._reward_obs_term},
 Arms: {self.arms},
 Seed: {self.seed}
 """

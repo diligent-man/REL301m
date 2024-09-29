@@ -1,13 +1,15 @@
 from .agent import (
-    Agent,
-    GreedyAgent,
-    EpsilonGreedyAgent,
-    EpsilonGreedyAgentConstantStepsize,
+    kArmAgent,
+    TDAgent,
+    GreedyKArmAgent,
+    EpsilonGreedyKArmAgent,
+    EpsilonGreedyKArmAgentConstantStepsize,
     AGENT_CLASS
 )
 
 from .environment import (
     TenArmEnv,
+    CliffWalkEnv,
     ParkingWorld,
     ENV_CLASS
 )
@@ -20,17 +22,20 @@ from .utils import (
     visualize_training_result,
     visualize_best_action_chosen,
     visualize_step_size_effect_to_q_value,
-    train
+    k_armed_bandit_train,
+    evaluate_policy_with_TD
 )
 
 __all__ = [
-    "Agent",
-    "GreedyAgent",
-    "EpsilonGreedyAgent",
-    "EpsilonGreedyAgentConstantStepsize",
+    "kArmAgent",
+    "TDAgent",
+    "GreedyKArmAgent",
+    "EpsilonGreedyKArmAgent",
+    "EpsilonGreedyKArmAgentConstantStepsize",
     "AGENT_CLASS",
 
     "TenArmEnv",
+    "CliffWalkEnv",
     "ParkingWorld",
     "ENV_CLASS",
 
@@ -41,5 +46,6 @@ __all__ = [
     "visualize_training_result",
     "visualize_best_action_chosen",
     "visualize_step_size_effect_to_q_value",
-    "train"
+    "k_armed_bandit_train",
+    "evaluate_policy_with_TD"
 ]

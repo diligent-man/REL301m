@@ -3,16 +3,16 @@ import numpy as np
 
 from typing import List
 from semester_8.REL301m.REL_lib import (
-    GreedyAgent,
-    EpsilonGreedyAgent,
-    EpsilonGreedyAgentConstantStepsize,
+    GreedyKArmAgent,
+    EpsilonGreedyKArmAgent,
+    EpsilonGreedyKArmAgentConstantStepsize,
 
     TenArmEnv,
 
     visualize_training_result,
     visualize_best_action_chosen,
     visualize_step_size_effect_to_q_value,
-    train
+    k_armed_bandit_train
 )
 
 
@@ -33,7 +33,7 @@ def exploration_exploitation_trade_off():
     avg_best_lst: List[float] = []
 
     for i, (agent, env, agent_info) in enumerate(zip(
-            [*[GreedyAgent()], *[EpsilonGreedyAgent()] * 3],
+            [*[GreedyKArmAgent()], *[EpsilonGreedyKArmAgent()] * 3],
             [TenArmEnv()] * 4,
             (Global.agent_1_info, Global.agent_2_info, Global.agent_3_info, Global.agent_4_info)
     )):
@@ -45,7 +45,7 @@ def exploration_exploitation_trade_off():
             legends.insert(i, f"Eps Greedy Avg Best {agent_info['epsilon']}")
             legends.append(f"Eps Greedy Agent {agent_info['epsilon']}")
 
-        mean_rewards, avg_best, _, _, _ = train(Global.num_actions, Global.num_runs, Global.num_steps, agent, env, agent_info)
+        mean_rewards, avg_best, _, _, _ = k_armed_bandit_train(Global.num_actions, Global.num_runs, Global.num_steps, agent, env, agent_info)
 
         reward_lst = mean_rewards if reward_lst is None else np.vstack((reward_lst, mean_rewards))
         avg_best_lst.append(avg_best)
@@ -71,19 +71,19 @@ def step_size_effect_to_chosen_action() -> None:
         agent_info = Global.agent_1_info
 
         if step_sizes[i] == "1/N(A)":
-            agent = EpsilonGreedyAgent()
+            agent = EpsilonGreedyKArmAgent()
             training_legends.insert(i, f"Avg best ss=1/N(A)")
             training_legends.append(f"Greedy Agent ss=1/N(A)")
 
         else:
-            agent = EpsilonGreedyAgentConstantStepsize()
+            agent = EpsilonGreedyKArmAgentConstantStepsize()
             agent_info = {**agent_info, "step_size": step_sizes[i]}
 
             training_legends.insert(i, f"Avg best ss={step_sizes[i]}")
             training_legends.append(f"Greedy Agent ss={step_sizes[i]}")
 
         env = TenArmEnv()
-        mean_rewards, avg_best, best_action_chosen, _, _ = train(Global.num_actions, Global.num_runs, Global.num_steps, agent, env, agent_info)
+        mean_rewards, avg_best, best_action_chosen, _, _ = k_armed_bandit_train(Global.num_actions, Global.num_runs, Global.num_steps, agent, env, agent_info)
 
         # Update tracked list
         avg_best_lst.append(avg_best)
@@ -110,13 +110,13 @@ def step_size_effect_to_estimated_q_value() -> None:
         agent_info = Global.agent_3_info
 
         if step_sizes[i] == "1_N(A)":
-            agent = EpsilonGreedyAgent()
+            agent = EpsilonGreedyKArmAgent()
         else:
-            agent = EpsilonGreedyAgentConstantStepsize()
+            agent = EpsilonGreedyKArmAgentConstantStepsize()
             agent_info = {**agent_info, "step_size": step_sizes[i]}
 
         env = TenArmEnv()
-        mean_rewards, _, _, expected_value, estimated_value = train(Global.num_actions, Global.num_runs, Global.num_steps, agent, env, agent_info)
+        mean_rewards, _, _, expected_value, estimated_value = k_armed_bandit_train(Global.num_actions, Global.num_runs, Global.num_steps, agent, env, agent_info)
 
         max_expected_value: np.ndarray = np.argmax(expected_value)
         estimated_value = estimated_value[max_expected_value, :]
@@ -139,19 +139,19 @@ def step_size_and_env_effect_to_reward() -> None:
         agent_info = Global.agent_3_info
 
         if step_sizes[i] == "1_N(A)":
-            agent = EpsilonGreedyAgent()
+            agent = EpsilonGreedyKArmAgent()
             legends.insert(i, f"Avg best ss=1/N(A)")
             legends.append(f"Greedy Agent ss=1/N(A)")
 
         else:
-            agent = EpsilonGreedyAgentConstantStepsize()
+            agent = EpsilonGreedyKArmAgentConstantStepsize()
             agent_info = {**agent_info, "step_size": step_sizes[i]}
 
             legends.insert(i, f"Avg best ss={step_sizes[i]}")
             legends.append(f"Greedy Agent ss={step_sizes[i]}")
 
         env = TenArmEnv()
-        mean_rewards, avg_best, _, _, _ = train(Global.num_actions, Global.num_runs, Global.num_steps,
+        mean_rewards, avg_best, _, _, _ = k_armed_bandit_train(Global.num_actions, Global.num_runs, Global.num_steps,
                                                 agent, env, agent_info,
                                                 resample_reward_step=500)
 

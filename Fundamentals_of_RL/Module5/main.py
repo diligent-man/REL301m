@@ -83,7 +83,7 @@ def bellman_update_v1(current_state: int,
         assert pi is not None, "Need providing prob of action for weighting state transition prob"
 
     new_v = 0.
-    for a in env.A:  # for all actions
+    for a in env.A:
         action_prob = pi[current_state, a] if weighting else 1
 
         for s_prime, (reward, transition_prob) in enumerate(env.transitions(current_state, a)):  # for all transitions
@@ -177,6 +177,7 @@ def bellman_update_v2(current_state: int,
     else:
         # Updated value pi(s) = p(s', r|s, a) * (r(s, a, s') + gamma * V(s'))
         updated_val = prob @ (reward.T + gamma * s_prime)
+    print(updated_val)
     return updated_val[:, 0].squeeze()
 ########################################################################################################################
 
@@ -300,7 +301,7 @@ def main() -> None:
     # inspect_visualize_value_fn()
     # inspect_transition_prob()
 
-    V1, pi1 = policy_iteration(Global.env, Global.V.copy(), Global.pi.copy(), Global.gamma, Global.theta, v1=False)
+    V1, pi1 = policy_iteration(Global.env, Global.V.copy(), Global.pi.copy(), Global.gamma, Global.theta, v1=True)
     V2, pi2 = policy_iteration(Global.env, Global.V.copy(), Global.pi.copy(), Global.gamma, Global.theta, v1=False)
     visualize_value_fn(V1, pi1)
     visualize_value_fn(V2, pi2)

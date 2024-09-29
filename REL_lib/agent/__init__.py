@@ -1,14 +1,16 @@
-from .Agent import Agent
-from .GreedyAgent import GreedyAgent
-from .EspilonGreedyAgent import EpsilonGreedyAgent
-from .EpsilonGreedyAgentConstantStepsize import EpsilonGreedyAgentConstantStepsize
+from .TDAgent import TDAgent
+from .kArmAgent import kArmAgent
+from .GreedyAgent import GreedyKArmAgent
+from .EspilonGreedyAgent import EpsilonGreedyKArmAgent
+from .EpsilonGreedyAgentConstantStepsize import EpsilonGreedyKArmAgentConstantStepsize
 
-AGENT_CLASS = Agent | GreedyAgent | EpsilonGreedyAgent | EpsilonGreedyAgentConstantStepsize
+AGENT_CLASS = kArmAgent | TDAgent | GreedyKArmAgent | EpsilonGreedyKArmAgent | EpsilonGreedyKArmAgentConstantStepsize
 
 __all__ = [
-    "Agent",
-    "GreedyAgent",
-    "EpsilonGreedyAgent",
-    "EpsilonGreedyAgentConstantStepsize",
+    "TDAgent",
+    "kArmAgent",
+    "GreedyKArmAgent",
+    "EpsilonGreedyKArmAgent",
+    "EpsilonGreedyKArmAgentConstantStepsize",
     "AGENT_CLASS"
 ]
