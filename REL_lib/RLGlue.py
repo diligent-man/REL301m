@@ -29,6 +29,7 @@ class RLGlue:
                  ) -> None:
         assert isinstance(agent_class, AGENT_CLASS), "Provided agent class is unavailable"
         assert isinstance(env_class, ENV_CLASS), "Provided env class is unavailable"
+
         self.agent: AGENT_CLASS = agent_class
         self.environment: ENV_CLASS = env_class
 
@@ -61,7 +62,6 @@ class RLGlue:
         Returns:
             The action taken by the agent.
         """
-        print(observation)
         return self.agent.agent_start(observation)
 
     def rl_agent_step(self, reward, observation):
@@ -129,7 +129,6 @@ class RLGlue:
         :return reward_obs_act_term (float, state, action, Boolean)
         """
         (reward, last_state, term) = self.environment.env_step(self.last_action)
-        print(reward, last_state, term, "reward")
         self.total_reward += reward
 
         if term:
@@ -140,7 +139,6 @@ class RLGlue:
             self.num_steps += 1
             self.last_action = self.agent.agent_step(reward, last_state)
             reward_obs_act_term = (reward, last_state, self.last_action, term)
-            print(reward_obs_act_term)
         return reward_obs_act_term
 
     def rl_cleanup(self):
@@ -173,14 +171,12 @@ class RLGlue:
         """
         return self.environment.env_message(message)
 
-    def rl_episode(self, max_steps_this_episode: int) -> bool:
-        """Runs an RLGlue episode
-
-        Args:
-            max_steps_this_episode (Int): the maximum steps for the experiment to run in an episode
-
-        Returns:
-            Boolean: if the episode should terminate
+    def rl_episode(self, max_steps_this_episode: int = 0) -> bool:
+        """
+        :param max_steps_this_episode:
+            0: step until being terminated
+            !0: otherwise
+        :return: if the episode should terminate
         """
         is_terminal = False
         _ = self.rl_start()

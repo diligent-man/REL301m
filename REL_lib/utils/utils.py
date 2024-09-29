@@ -231,29 +231,14 @@ def visualize_value_fn(V: np.ndarray, pi: np.ndarray) -> None:
 
 def evaluate_policy_with_TD(rl_glue: RLGlue,
                             grid_world_manager: GridWorldManager,
-                            theta: float,
                             plot_freq: int,
                             num_episodes: int,
-                            save_path_root: str
-                   ) -> Tuple[np.ndarray, np.ndarray]:
-    delta = float("inf")
-    prev_v = rl_glue.agent.values
+                            save_path_root: str,
+                            title: str = None
+                            ) -> np.ndarray:
+    for episode in tqdm(range(num_episodes), desc='Evaluating'):
+        rl_glue.rl_episode()
 
-    for episode in tqdm(range(1, num_episodes + 1)):
-        print("start new episode")
-        _ = rl_glue.rl_episode(0)  # no step limit
-
-        print()
-        print()
-        # current_v: np.ndarray = rl_glue.agent.agent_message("get_values")
-        # np.allclose(current_v, )
-        # delta = max(np.abs(values - theta), delta)
-        #
-        # if episode % plot_freq == 0:
-        #
-        #     grid_world_manager.plot_training_result(values, episode, save_path_root)
-
-    return (
-        rl_glue.agent.agent_message("get_values"),
-        rl_glue.agent.agent_message("get_policy")
-    )
+        if episode == 0 or (episode+1) % plot_freq == 0:
+            grid_world_manager.plot_training_result(rl_glue.agent.values, episode+1, save_path_root, title)
+    return rl_glue.agent.values
