@@ -8,9 +8,11 @@ from .FrozenLakeBellmanAgent import FrozenLakeBellmanAgent
 from .FrozenLakeESControlMCAgent import FrozenLakeESControlMCAgent
 from .FrozenLakeOnPolicyMCAgent import FrozenLakeOnPolicyMCAgent
 from .FrozenLakeSARSAAgent import FrozenLakeSARSAAgent
+from .FrozenLakeQLearningAgent import FrozenLakeQLearningAgent
 
 AGENT_CLASS = TDAgent | kArmAgent | GreedyKArmAgent | EpsilonGreedyKArmAgent | EpsilonGreedyKArmAgentConstantStepsize |\
-              FrozenLakeBellmanAgent | FrozenLakeESControlMCAgent | FrozenLakeOnPolicyMCAgent | FrozenLakeSARSAAgent
+              FrozenLakeBellmanAgent | FrozenLakeESControlMCAgent | FrozenLakeOnPolicyMCAgent | FrozenLakeSARSAAgent |\
+              FrozenLakeQLearningAgent
 
 
 __all__ = [
@@ -24,6 +26,7 @@ __all__ = [
     "FrozenLakeESControlMCAgent",
     "FrozenLakeOnPolicyMCAgent",
     "FrozenLakeSARSAAgent",
+    "FrozenLakeQLearningAgent",
 
     "AGENT_CLASS"
 ]

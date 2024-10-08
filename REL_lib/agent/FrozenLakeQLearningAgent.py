@@ -3,14 +3,15 @@ import numpy as np
 
 from tqdm import tqdm
 
+
 from .GPIAgent import GPIAgent
 from ..environment import CustomFrozenLakeENV
 
 
-__all__ = ["FrozenLakeSARSAAgent"]
+__all__ = ["FrozenLakeQLearningAgent"]
 
 
-class FrozenLakeSARSAAgent(GPIAgent):
+class FrozenLakeQLearningAgent(GPIAgent):
     def __init__(self,
                  env: CustomFrozenLakeENV,
                  lr: float = 1e-3,
@@ -19,7 +20,7 @@ class FrozenLakeSARSAAgent(GPIAgent):
                  eval_episodes: int = 1000,
                  impr_episodes: int = 1000
                  ):
-        super(FrozenLakeSARSAAgent, self).__init__()
+        super(FrozenLakeQLearningAgent, self).__init__()
         self.__env = env
         self.__num_actions: int = self.__env.action_space.n
         self.__num_states: int = self.__env.observation_space.n
@@ -91,8 +92,8 @@ class FrozenLakeSARSAAgent(GPIAgent):
                 reward, next_state, term, _ = self.__env.step(At)
                 next_action: int = self._select_action(Q, next_state)
 
-                SARSA_err = reward + self.__discount_factor * Q[next_state, next_action] - Q[St, At]
-                Q[St, At] += self.__lr * SARSA_err
+                QLearning_err = reward + self.__discount_factor * np.max(Q[next_state, :]) - Q[St, At]
+                Q[St, At] += self.__lr * QLearning_err
 
                 if term:
                     break
