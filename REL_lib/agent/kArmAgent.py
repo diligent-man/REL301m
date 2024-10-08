@@ -105,6 +105,7 @@ last_action: {self.last_action}"""
         return self.last_action
 
     def agent_end(self, reward: _reward): raise NotImplementedError
+
     def agent_cleanup(self): raise NotImplementedError
 
     def agent_message(self, message): raise NotImplementedError

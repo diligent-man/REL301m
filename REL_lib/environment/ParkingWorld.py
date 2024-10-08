@@ -102,4 +102,3 @@ class ParkingWorld:
             self.p(s_, self.reward(s, s_), s, a) for s_ in self.__S
         ]
         return np.random.choice(self.__S, p=probabilities)
-

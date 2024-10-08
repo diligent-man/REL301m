@@ -2,10 +2,8 @@ import copy
 import numpy as np
 from typing import Tuple, Union
 
-from semester_8.REL301m.REL_lib import (
-    ParkingWorld,
-    visualize_value_fn
-)
+from semester_8.REL301m.REL_lib.environment import ParkingWorld
+from semester_8.REL301m.REL_lib.utils import visualize_value_fn
 
 
 class Global:
@@ -177,7 +175,6 @@ def bellman_update_v2(current_state: int,
     else:
         # Updated value pi(s) = p(s', r|s, a) * (r(s, a, s') + gamma * V(s'))
         updated_val = prob @ (reward.T + gamma * s_prime)
-    print(updated_val)
     return updated_val[:, 0].squeeze()
 ########################################################################################################################
 
@@ -301,15 +298,15 @@ def main() -> None:
     # inspect_visualize_value_fn()
     # inspect_transition_prob()
 
-    V1, pi1 = policy_iteration(Global.env, Global.V.copy(), Global.pi.copy(), Global.gamma, Global.theta, v1=True)
-    V2, pi2 = policy_iteration(Global.env, Global.V.copy(), Global.pi.copy(), Global.gamma, Global.theta, v1=False)
-    visualize_value_fn(V1, pi1)
-    visualize_value_fn(V2, pi2)
-    print(np.array_equal(V1, V2))
-    print(np.array_equal(pi1, pi2))
+    # V1, pi1 = policy_iteration(Global.env, Global.V.copy(), Global.pi.copy(), Global.gamma, Global.theta, v1=False)
+    # V2, pi2 = policy_iteration(Global.env, Global.V.copy(), Global.pi.copy(), Global.gamma, Global.theta, v1=False)
+    # visualize_value_fn(V1, pi1)
+    # visualize_value_fn(V2, pi2)
+    # print(np.array_equal(V1, V2))
+    # print(np.array_equal(pi1, pi2))
 
-    V, pi = value_iteration_v2(Global.env, Global.gamma, Global.theta)
-    visualize_value_fn(V, pi)
+    # V, pi = value_iteration_v2(Global.env, Global.gamma, Global.theta)
+    # visualize_value_fn(V, pi)
     return None
 
 
