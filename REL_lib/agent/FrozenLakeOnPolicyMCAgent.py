@@ -8,10 +8,10 @@ from .GPIAgent import GPIAgent
 from ..environment import CustomFrozenLakeENV
 
 
-__all__ = ["FrozenOnPolicyMCAgent"]
+__all__ = ["FrozenLakeOnPolicyMCAgent"]
 
 
-class FrozenOnPolicyMCAgent(GPIAgent):
+class FrozenLakeOnPolicyMCAgent(GPIAgent):
     def __init__(self,
                  env: CustomFrozenLakeENV,
                  epsilon: float = .2,
@@ -23,7 +23,7 @@ class FrozenOnPolicyMCAgent(GPIAgent):
                  impr_episodes: int = 1000,
                  max_trajectory_length: int = 100
                  ):
-        super(FrozenOnPolicyMCAgent, self).__init__()
+        super(FrozenLakeOnPolicyMCAgent, self).__init__()
         self.__env = env
         self.__num_actions: int = self.__env.action_space.n
         self.__num_states: int = self.__env.observation_space.n

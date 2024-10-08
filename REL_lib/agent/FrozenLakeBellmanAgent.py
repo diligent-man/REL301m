@@ -5,10 +5,10 @@ from .GPIAgent import GPIAgent
 from ..environment import CustomFrozenLakeENV
 
 
-__all__ = ["FrozenBellmanAgent"]
+__all__ = ["FrozenLakeBellmanAgent"]
 
 
-class FrozenBellmanAgent(GPIAgent):
+class FrozenLakeBellmanAgent(GPIAgent):
     def __init__(self,
                  env: CustomFrozenLakeENV,
                  threshold: float = 1e-10,

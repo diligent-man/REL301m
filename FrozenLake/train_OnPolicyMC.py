@@ -4,7 +4,7 @@ sys.path.append("/home/trong/Downloads/Local/Source/Python")
 import numpy as np
 
 from tqdm import tqdm
-from semester_8.REL301m.REL_lib.agent import FrozenOnPolicyMCAgent
+from semester_8.REL301m.REL_lib.agent import FrozenLakeOnPolicyMCAgent
 from semester_8.REL301m.REL_lib.environment import CustomFrozenLakeENV
 
 
@@ -12,7 +12,7 @@ def main() -> None:
     env: CustomFrozenLakeENV = CustomFrozenLakeENV(None and "human", None, "8x8", True)
     env.env_start()
 
-    agent = FrozenOnPolicyMCAgent(env, eval_episodes=10000, impr_episodes=10000)
+    agent = FrozenLakeOnPolicyMCAgent(env, eval_episodes=10000, impr_episodes=10000)
     pi = agent.train(num_iters=1000)
 
     tot_rew = 0

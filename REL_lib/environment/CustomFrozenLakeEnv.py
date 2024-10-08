@@ -39,7 +39,7 @@ class CustomFrozenLakeENV(FrozenLakeEnv, BaseEnvironment):
         if self.render_mode == "human":
             self.render()
         self._reward_obs_term = (reward, int(state), term)
-        return (reward, int(state), term, prob)
+        return reward, int(state), term, prob
 
     @overrides.override
     def env_init(self, env_info: Dict = None) -> None:

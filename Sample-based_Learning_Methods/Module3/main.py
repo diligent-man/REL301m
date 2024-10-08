@@ -3,12 +3,17 @@ import shutil
 import numpy as np
 
 from typing import Tuple
-from semester_8.REL301m.REL_lib import (
-    TDAgent, AGENT_CLASS,
-    CliffWalkEnv, ENV_CLASS,
-    RLGlue, GridWorldManager,
-    evaluate_policy_with_TD
+from semester_8.REL301m.REL_lib.agent import (
+    TDAgent, AGENT_CLASS
 )
+
+from semester_8.REL301m.REL_lib.environment import (
+    CliffWalkEnv, ENV_CLASS
+)
+
+from semester_8.REL301m.REL_lib.RLGlue import RLGlue
+from semester_8.REL301m.REL_lib.utils import evaluate_policy_with_TD, GridWorldManager
+
 
 
 class GlobalVar:

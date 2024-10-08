@@ -1,5 +1,5 @@
 from tqdm import tqdm
-from semester_8.REL301m.REL_lib.agent import FrozenBellmanAgent
+from semester_8.REL301m.REL_lib.agent import FrozenLakeBellmanAgent
 from semester_8.REL301m.REL_lib.environment import CustomFrozenLakeENV
 
 
@@ -7,7 +7,7 @@ def main() -> None:
     env: CustomFrozenLakeENV = CustomFrozenLakeENV(None and "human", None, "8x8", True)
     env.env_start()
 
-    agent = FrozenBellmanAgent(env)
+    agent = FrozenLakeBellmanAgent(env)
     pi = agent.train()
 
     tot_rew = 0

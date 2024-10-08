@@ -8,10 +8,10 @@ from .GPIAgent import GPIAgent
 from ..environment import CustomFrozenLakeENV
 
 
-__all__ = ["FrozenESControlMCAgent"]
+__all__ = ["FrozenLakeESControlMCAgent"]
 
 
-class FrozenESControlMCAgent(GPIAgent):
+class FrozenLakeESControlMCAgent(GPIAgent):
     def __init__(self,
                  env: CustomFrozenLakeENV,
                  discount_factor: float = 0.5,
@@ -19,7 +19,7 @@ class FrozenESControlMCAgent(GPIAgent):
                  impr_episodes: int = 1000,
                  max_trajectory_length: int = 100
                  ):
-        super(FrozenESControlMCAgent, self).__init__()
+        super(FrozenLakeESControlMCAgent, self).__init__()
         self.__env = env
         self.__num_actions: int = self.__env.action_space.n
         self.__num_states: int = self.__env.observation_space.n
